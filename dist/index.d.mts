@@ -103,4 +103,4 @@ declare class Store<Strictness extends string = strictnessType> {
     destroy(): void;
 }
 
-export { Store, strictnessEqualComparer };
+export { type IStoreFlags, Store, strictnessEqualComparer, type strictnessType };
