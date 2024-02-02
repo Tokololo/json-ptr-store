@@ -4,7 +4,7 @@ import { cloneJson, distinctUntilChangedEq, longestCommonPrefix, ptrGet, ptrRemo
 
 interface IStoreValue { [tag: string]: any }
 interface IStorePtr { ptr: string, value: any }
-export interface IStoreFlags<Strictness extends string = strictnessType> {
+interface IStoreFlags<Strictness extends string = strictnessType> {
     nextTick?: boolean,
     strictness?: Strictness
 }
@@ -14,7 +14,7 @@ const flagValue = (flag1?: boolean, flag2?: boolean) =>
         flag1 :
         flag2;
 
-export { strictnessEqualComparer, strictnessType }
+export { strictnessEqualComparer, strictnessType, IStoreFlags }
 
 export class Store<Strictness extends string = strictnessType> {
 
