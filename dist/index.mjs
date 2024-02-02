@@ -14,7 +14,7 @@ import { isArray as isArray2, isPlainObject as isPlainObject2 } from "lodash";
 import { remove, get, set, has } from "json-pointer";
 import { cloneDeep, isArray, isEqual, isPlainObject, mapValues } from "lodash";
 import { distinctUntilChanged } from "rxjs";
-var cleanDeep = __require("clean-deep");
+import cleanDeep from "clean-deep";
 var sortAny = __require("sort-any");
 var CLEAN_DEEP_OPTS = {
   emptyArrays: true,
@@ -244,6 +244,7 @@ var Store = class {
   }
 };
 export {
-  Store
+  Store,
+  strictnessEqualComparer
 };
 //# sourceMappingURL=index.mjs.map

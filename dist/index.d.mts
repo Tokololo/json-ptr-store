@@ -5,6 +5,15 @@ import { Observable } from 'rxjs';
  */
 type strictnessType = 'isEqualRemoveUndefinedSorted' | 'isEqualRemoveUndefined' | 'isEqual' | 'strict' | 'none';
 type customStrictnessComparerType<Stricktness extends string> = (obj1: any, obj2: any, strictness: Stricktness) => boolean;
+/**
+ * Compare two objects taking strictness constraint into consideration
+ * @param obj1
+ * @param obj2
+ * @param strictness One of 'isEqualRemoveUndefinedSorted' | 'isEqualRemoveUndefined' | 'isEqual' | 'strict' | 'none', or string if using custom
+ * @param comparer A custom comparer to use with a custom strictness that supplements the default comparer.
+ * @returns
+ */
+declare const strictnessEqualComparer: <Strictness extends string = strictnessType>(obj1: any, obj2: any, strictness?: Strictness, comparer?: customStrictnessComparerType<Strictness> | undefined) => boolean;
 
 interface IStoreValue {
     [tag: string]: any;
@@ -94,4 +103,4 @@ declare class Store<Strictness extends string = strictnessType> {
     destroy(): void;
 }
 
-export { Store };
+export { Store, strictnessEqualComparer };

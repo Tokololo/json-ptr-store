@@ -2,7 +2,7 @@ import { remove, get, set, has } from 'json-pointer';
 import { cloneDeep, isArray, isEqual, isPlainObject, mapValues } from 'lodash';
 import { distinctUntilChanged } from 'rxjs';
 import { CleanOptions } from 'clean-deep';
-const cleanDeep = require('clean-deep');
+import cleanDeep from 'clean-deep';
 const sortAny = require('sort-any');
 
 const CLEAN_DEEP_OPTS = {

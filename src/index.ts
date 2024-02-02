@@ -1,1 +1,1 @@
-export { Store } from './store';
+export { Store, strictnessEqualComparer } from './store';

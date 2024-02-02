@@ -1,7 +1,9 @@
 "use strict";
+var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __export = (target, all) => {
   for (var name in all)
@@ -15,12 +17,21 @@ var __copyProps = (to, from, except, desc) => {
   }
   return to;
 };
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  // If the importer is in node compatibility mode or this is not an ESM
+  // file that has been converted to a CommonJS file using a Babel-
+  // compatible transform (i.e. "__esModule" has not been set), then set
+  // "default" to the CommonJS "module.exports" for node compatibility.
+  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+  mod
+));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
 // src/index.ts
 var src_exports = {};
 __export(src_exports, {
-  Store: () => Store
+  Store: () => Store,
+  strictnessEqualComparer: () => strictnessEqualComparer
 });
 module.exports = __toCommonJS(src_exports);
 
@@ -32,7 +43,7 @@ var import_lodash2 = require("lodash");
 var import_json_pointer = require("json-pointer");
 var import_lodash = require("lodash");
 var import_rxjs = require("rxjs");
-var cleanDeep = require("clean-deep");
+var import_clean_deep = __toESM(require("clean-deep"));
 var sortAny = require("sort-any");
 var CLEAN_DEEP_OPTS = {
   emptyArrays: true,
@@ -68,7 +79,7 @@ var longestCommonPrefix = (ptrs) => {
   return prefixParts.length === 1 ? "/" : prefixParts.join("/");
 };
 var removeDeepUndefined = (obj, no_clone, options) => {
-  return cleanDeep(no_clone ? obj : cloneJson(obj), options || CLEAN_DEEP_OPTS);
+  return (0, import_clean_deep.default)(no_clone ? obj : cloneJson(obj), options || CLEAN_DEEP_OPTS);
 };
 var strictnessEqualComparer = (obj1, obj2, strictness = "none", comparer) => {
   if (strictness === "none")
@@ -263,6 +274,7 @@ var Store = class {
 };
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  Store
+  Store,
+  strictnessEqualComparer
 });
 //# sourceMappingURL=index.js.map
