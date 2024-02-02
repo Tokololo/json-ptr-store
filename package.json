@@ -1,6 +1,6 @@
 {
     "name": "@tokololo/json-ptr-store",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "A json pointer and rxjs enabled reactive store",
     "main": "./dist/index.js",
     "module": "./dist/index.mjs",

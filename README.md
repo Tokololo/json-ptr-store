@@ -1,4 +1,4 @@
-# What is PtrStore?
+# What is json-ptr-store?
 json-ptr-store is a rxjs enabled reactive store that uses json pointers to get and set values.
 # How to use
 ## Creating an instance of the store
