@@ -1,3 +1,4 @@
+"use strict";
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
@@ -136,15 +137,14 @@ var Store = class {
   constructor(initial, _flags, _comparer) {
     this._flags = _flags;
     this._comparer = _comparer;
-    var _a;
+    this._sub = new import_rxjs2.BehaviorSubject({ last_set_ptrs: [], value: {} });
+    this._running = true;
     this._flags = this._flags || {};
-    if (!((_a = this._flags) == null ? void 0 : _a.strictness))
+    if (!this._flags?.strictness)
       this._flags.strictness = "none";
     if (initial)
       this._sub.next({ last_set_ptrs: ["/"], value: (0, import_lodash2.isPlainObject)(initial) ? initial : {} });
   }
-  _sub = new import_rxjs2.BehaviorSubject({ last_set_ptrs: [], value: {} });
-  _running = true;
   _setDel(sets, dels) {
     const val = this._sub.value.value;
     sets.forEach((datum) => ptrSet(val, datum.ptr, datum.value));
@@ -160,8 +160,7 @@ var Store = class {
    * @param flags Flags to control the bahavior: { nextTick?: boolean }. If nextTick is set it is done on a timeout.
    */
   setDel(sets, dels, flags) {
-    var _a;
-    if (flagValue(flags == null ? void 0 : flags.nextTick, (_a = this._flags) == null ? void 0 : _a.nextTick))
+    if (flagValue(flags?.nextTick, this._flags?.nextTick))
       setTimeout(() => this._setDel(sets, dels), 0);
     else
       this._setDel(sets, dels);
@@ -179,8 +178,7 @@ var Store = class {
    * @param flags Flags to control the bahavior: { nextTick?: boolean }. If nextTick is set it is done on a timeout.
    */
   set(data, flags) {
-    var _a;
-    if (flagValue(flags == null ? void 0 : flags.nextTick, (_a = this._flags) == null ? void 0 : _a.nextTick))
+    if (flagValue(flags?.nextTick, this._flags?.nextTick))
       setTimeout(() => this._set(data), 0);
     else
       this._set(data);
@@ -203,11 +201,10 @@ var Store = class {
    * @param flags Flags to control the bahavior: { nextTick?: boolean, atomic?: boolean }. If nextTick is set it is done on a timeout. If atomic is set pointer operations only take effect on completion of all operations.
    */
   del(ptrs, flags) {
-    var _a;
-    if (flagValue(flags == null ? void 0 : flags.nextTick, (_a = this._flags) == null ? void 0 : _a.nextTick))
-      setTimeout(() => this._del(ptrs, flags == null ? void 0 : flags.atomic), 0);
+    if (flagValue(flags?.nextTick, this._flags?.nextTick))
+      setTimeout(() => this._del(ptrs, flags?.atomic), 0);
     else
-      this._del(ptrs, flags == null ? void 0 : flags.atomic);
+      this._del(ptrs, flags?.atomic);
   }
   /**
    * Assign array/object literal values to the store 
