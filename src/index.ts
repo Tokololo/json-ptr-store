@@ -1,1 +1,1 @@
-export { Store, strictnessEqualComparer } from './store';
+export { Store, strictnessEqualComparer, strictnessType, IStoreFlags } from './store';
