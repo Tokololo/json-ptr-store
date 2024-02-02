@@ -3,7 +3,7 @@ import { cloneDeep, isArray, isEqual, isPlainObject, mapValues } from 'lodash';
 import { distinctUntilChanged } from 'rxjs';
 import { CleanOptions } from 'clean-deep';
 import cleanDeep from 'clean-deep';
-import { sortAny } from './sortany';
+const sortAny = require('sort-any');
 
 const CLEAN_DEEP_OPTS = {
     emptyArrays: true,

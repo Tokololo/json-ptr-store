@@ -37,166 +37,14 @@ module.exports = __toCommonJS(src_exports);
 
 // src/store.ts
 var import_rxjs2 = require("rxjs");
-var import_lodash3 = require("lodash");
+var import_lodash2 = require("lodash");
 
 // src/library.ts
 var import_json_pointer = require("json-pointer");
-var import_lodash2 = require("lodash");
+var import_lodash = require("lodash");
 var import_rxjs = require("rxjs");
 var import_clean_deep = __toESM(require("clean-deep"));
-
-// src/sortany.ts
-var import_lodash = require("lodash");
-var types = {
-  undefined: Symbol("undefined"),
-  null: Symbol("null"),
-  boolean: Symbol("boolean"),
-  NaN: Symbol("NaN"),
-  number: Symbol("number"),
-  string: Symbol("string"),
-  symbol: Symbol("symbol"),
-  date: Symbol("date"),
-  set: Symbol("set"),
-  array: Symbol("array"),
-  map: Symbol("map"),
-  object: Symbol("object")
-};
-var typesValues = (0, import_lodash.values)(types);
-var orderedTypes = (0, import_lodash.zipObject)(typesValues, Object.keys(typesValues).map((key) => Number(key)));
-var comparators = {
-  [types.array]: compareArray,
-  [types.set]: (a, b) => compareArray([...a], [...b]),
-  [types.map]: (a, b) => compareObject(Object.fromEntries(a), Object.fromEntries(b)),
-  [types.number]: standardCompare,
-  [types.object]: compareObject,
-  [types.string]: standardCompare,
-  [types.symbol]: (a, b) => standardCompare(a.toString().slice(0, -1), b.toString().slice(0, -1))
-};
-function getOrderByType(type) {
-  return orderedTypes[type];
-}
-function getTypeByValue(value) {
-  if (typeof value === "undefined") {
-    return types.undefined;
-  }
-  if (value === null) {
-    return types.null;
-  }
-  if (typeof value === "boolean") {
-    return types.boolean;
-  }
-  if (typeof value === "number" && Number.isNaN(value)) {
-    return types.NaN;
-  }
-  if (typeof value === "number") {
-    return types.number;
-  }
-  if (typeof value === "string") {
-    return types.string;
-  }
-  if (typeof value === "symbol") {
-    return types.symbol;
-  }
-  if (value instanceof Date) {
-    return types.date;
-  }
-  if (value instanceof Set) {
-    return types.set;
-  }
-  if (value instanceof Map) {
-    return types.map;
-  }
-  if (Array.isArray(value)) {
-    return types.array;
-  }
-  return types.object;
-}
-function standardCompare(a, b) {
-  if (a < b) {
-    return -1;
-  }
-  if (a > b) {
-    return 1;
-  }
-  return 0;
-}
-function compareArray(first, second) {
-  if (first.length < second.length) {
-    return -1;
-  }
-  if (second.length < first.length) {
-    return 1;
-  }
-  const sortedFirst = sortAny(first);
-  const sortedSecond = sortAny(second);
-  for (let i = 0; i < first.length; i++) {
-    const compareResult = compareSimple(sortedFirst[i], sortedSecond[i]);
-    if (compareResult) {
-      return compareResult;
-    }
-  }
-  for (let i = 0; i < first.length; i++) {
-    const compareResult = compareSimple(first[i], second[i]);
-    if (compareResult) {
-      return compareResult;
-    }
-  }
-  return 0;
-}
-function compareObject(first, second) {
-  const firstKeys = Object.keys(first);
-  const secondKeys = Object.keys(second);
-  if (firstKeys.length < secondKeys.length) {
-    return -1;
-  }
-  if (secondKeys.length < firstKeys.length) {
-    return 1;
-  }
-  const sortedFirstKeys = sortAny(firstKeys);
-  const sortedSecondKeys = sortAny(secondKeys);
-  for (let i = 0; i < firstKeys.length; i++) {
-    const compareResult = compareSimple(sortedFirstKeys[i], sortedSecondKeys[i]);
-    if (compareResult) {
-      return compareResult;
-    }
-  }
-  for (let i = 0; i < firstKeys.length; i++) {
-    const key = sortedFirstKeys[i];
-    const compareResult = compareSimple(first[key], second[key]);
-    if (compareResult) {
-      return compareResult;
-    }
-  }
-  for (let i = 0; i < firstKeys.length; i++) {
-    const compareResult = compareSimple(firstKeys[i], secondKeys[i]);
-    if (compareResult) {
-      return compareResult;
-    }
-  }
-  return 0;
-}
-function compareSimple(first, second) {
-  const firstType = getTypeByValue(first);
-  const secondType = getTypeByValue(second);
-  const firstOrder = getOrderByType(firstType);
-  const secondOrder = getOrderByType(secondType);
-  const differenceByType = firstOrder - secondOrder;
-  if (differenceByType) {
-    return differenceByType;
-  }
-  const comparator = comparators[firstType] || standardCompare;
-  return comparator(first, second);
-}
-function compare(a, b) {
-  return compareSimple(a, b);
-}
-var sortAny = (array) => {
-  const undefinedsArray = array.filter((x) => typeof x === "undefined");
-  const notUndefinedsArray = array.filter((x) => typeof x !== "undefined");
-  return [...undefinedsArray, ...[...notUndefinedsArray].sort(compare)];
-};
-
-// src/library.ts
+var sortAny = require("sort-any");
 var CLEAN_DEEP_OPTS = {
   emptyArrays: true,
   emptyObjects: true,
@@ -210,10 +58,10 @@ var voidObject = (source, val) => {
   Object.assign(source, val);
 };
 var sortDeep = (obj) => {
-  if (!(0, import_lodash2.isArray)(obj)) {
-    if (!(0, import_lodash2.isPlainObject)(obj))
+  if (!(0, import_lodash.isArray)(obj)) {
+    if (!(0, import_lodash.isPlainObject)(obj))
       return obj;
-    return (0, import_lodash2.mapValues)(obj, sortDeep);
+    return (0, import_lodash.mapValues)(obj, sortDeep);
   }
   return sortAny(obj.map(sortDeep));
 };
@@ -243,17 +91,17 @@ var strictnessEqualComparer = (obj1, obj2, strictness = "none", comparer) => {
   if (strictness === "strict")
     return obj1 === obj2;
   if (strictness == "isEqual")
-    return (0, import_lodash2.isEqual)(
+    return (0, import_lodash.isEqual)(
       obj1,
       obj2
     );
   else if (strictness == "isEqualRemoveUndefined")
-    return (0, import_lodash2.isEqual)(
+    return (0, import_lodash.isEqual)(
       removeDeepUndefined(obj1),
       removeDeepUndefined(obj2)
     );
   else if (strictness == "isEqualRemoveUndefinedSorted")
-    return (0, import_lodash2.isEqual)(
+    return (0, import_lodash.isEqual)(
       sortDeep(removeDeepUndefined(obj1)),
       sortDeep(removeDeepUndefined(obj2))
     );
@@ -282,7 +130,7 @@ function cloneJson(value) {
   try {
     if (typeof value == "undefined")
       return void 0;
-    return (0, import_lodash2.cloneDeep)(value);
+    return (0, import_lodash.cloneDeep)(value);
   } catch (error) {
     throw error;
   }
@@ -306,7 +154,7 @@ var Store = class {
     if (!this._flags?.strictness)
       this._flags.strictness = "none";
     if (initial)
-      this._sub.next({ last_set_ptrs: ["/"], value: (0, import_lodash3.isPlainObject)(initial) ? initial : {} });
+      this._sub.next({ last_set_ptrs: ["/"], value: (0, import_lodash2.isPlainObject)(initial) ? initial : {} });
   }
   _setDel(sets, dels) {
     const val = this._sub.value.value;
@@ -376,9 +224,9 @@ var Store = class {
    */
   assign(data, nextTick) {
     const val = this.slice(data.ptr);
-    if ((0, import_lodash3.isArray)(val) && (0, import_lodash3.isArray)(data.value))
+    if ((0, import_lodash2.isArray)(val) && (0, import_lodash2.isArray)(data.value))
       this.set([{ ptr: data.ptr, value: [...val, ...data.value] }], { nextTick });
-    else if ((0, import_lodash3.isPlainObject)(val) && (0, import_lodash3.isPlainObject)(data.value))
+    else if ((0, import_lodash2.isPlainObject)(val) && (0, import_lodash2.isPlainObject)(data.value))
       this.set([{ ptr: data.ptr, value: { ...val, ...data.value } }], { nextTick });
     else
       this.set([data], { nextTick });
