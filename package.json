@@ -1,6 +1,6 @@
 {
     "name": "@tokololo/json-ptr-store",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "description": "A json pointer and rxjs enabled reactive store",
     "main": "./dist/index.js",
     "module": "./dist/index.mjs",
@@ -43,7 +43,6 @@
         "clean-deep": "^3.4.0",
         "json-pointer": "^0.6.2",
         "lodash": "^4.17.21",
-        "rxjs": "^7.8.1",
-        "sort-any": "^4.0.5"
+        "rxjs": "^7.8.1"
     }
 }
