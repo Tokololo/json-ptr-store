@@ -1,11 +1,21 @@
 {
+    "include": [
+        "src"
+    ],
+    "exclude": [
+        "dist",
+        "node_modules"
+    ],
     "compilerOptions": {
-        "target": "es2020", 
+        "target": "es2020",
         "module": "commonjs",
-        "outDir": "dist",
+        "outDir": "dist/cjs",
+        "rootDir": "src",
+        "moduleResolution": "node",
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
         "strict": true,
         "declaration": true,
+        "sourceMap": true
     }
 }

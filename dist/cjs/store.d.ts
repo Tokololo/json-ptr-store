@@ -1,20 +1,5 @@
-import { Observable } from 'rxjs';
-
-/**
- * The strictness values used by the default comparer
- */
-type strictnessType = 'isEqualRemoveUndefinedSorted' | 'isEqualRemoveUndefined' | 'isEqual' | 'strict' | 'none';
-type customStrictnessComparerType<Stricktness extends string> = (obj1: any, obj2: any, strictness: Stricktness) => boolean;
-/**
- * Compare two objects taking strictness constraint into consideration
- * @param obj1
- * @param obj2
- * @param strictness One of 'isEqualRemoveUndefinedSorted' | 'isEqualRemoveUndefined' | 'isEqual' | 'strict' | 'none', or string if using custom
- * @param comparer A custom comparer to use with a custom strictness that supplements the default comparer.
- * @returns
- */
-declare const strictnessEqualComparer: <Strictness extends string = strictnessType>(obj1: any, obj2: any, strictness?: Strictness, comparer?: customStrictnessComparerType<Strictness> | undefined) => boolean;
-
+import { Observable } from "rxjs";
+import { strictnessEqualComparer, strictnessType, customStrictnessComparerType } from "./library";
 interface IStoreValue {
     [tag: string]: any;
 }
@@ -26,8 +11,8 @@ interface IStoreFlags<Strictness extends string = strictnessType> {
     nextTick?: boolean;
     strictness?: Strictness;
 }
-
-declare class Store<Strictness extends string = strictnessType> {
+export { strictnessEqualComparer, strictnessType, IStoreFlags };
+export declare class Store<Strictness extends string = strictnessType> {
     private _flags?;
     private _comparer?;
     private _sub;
@@ -102,5 +87,3 @@ declare class Store<Strictness extends string = strictnessType> {
      */
     destroy(): void;
 }
-
-export { type IStoreFlags, Store, strictnessEqualComparer, type strictnessType };
