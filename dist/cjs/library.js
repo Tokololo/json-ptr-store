@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.cloneJson = exports.ptrRemove = exports.ptrHas = exports.ptrSet = exports.ptrGet = exports.distinctUntilChangedEq = exports.strictnessEqualComparer = exports.removeDeepUndefined = exports.longestCommonPrefix = void 0;
-const json_pointer_1 = require("json-pointer");
+const json_pointer_1 = __importDefault(require("json-pointer"));
 const lodash_1 = require("lodash");
 const rxjs_1 = require("rxjs");
 const clean_deep_1 = __importDefault(require("clean-deep"));
@@ -81,32 +81,32 @@ exports.distinctUntilChangedEq = distinctUntilChangedEq;
 const ptrGet = (source, ptr) => {
     return ptr === '/' ?
         source :
-        (0, json_pointer_1.get)(source, ptr);
+        json_pointer_1.default.get(source, ptr);
 };
 exports.ptrGet = ptrGet;
 const ptrSet = (source, ptr, val) => {
     try {
         return ptr === '/' ?
             voidObject(source, val) :
-            (0, json_pointer_1.set)(source, ptr, val);
+            json_pointer_1.default.set(source, ptr, val);
     }
-    catch { }
+    catch (_a) { }
 };
 exports.ptrSet = ptrSet;
 const ptrHas = (source, ptr) => {
     try {
         return ptr === '/' ?
             typeof source != 'undefined' :
-            (0, json_pointer_1.has)(source, ptr);
+            json_pointer_1.default.has(source, ptr);
     }
-    catch { }
+    catch (_a) { }
 };
 exports.ptrHas = ptrHas;
 const ptrRemove = (source, ptr) => {
     try {
-        (0, json_pointer_1.remove)(source, ptr);
+        json_pointer_1.default.remove(source, ptr);
     }
-    catch { }
+    catch (_a) { }
 };
 exports.ptrRemove = ptrRemove;
 function cloneJson(value) {
@@ -120,4 +120,3 @@ function cloneJson(value) {
     }
 }
 exports.cloneJson = cloneJson;
-//# sourceMappingURL=library.js.map

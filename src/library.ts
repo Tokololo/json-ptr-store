@@ -1,4 +1,4 @@
-import { remove, get, set, has } from 'json-pointer';
+import jsonPointer from 'json-pointer';
 import { cloneDeep, isArray, isEqual, isPlainObject, mapValues } from 'lodash';
 import { distinctUntilChanged } from 'rxjs';
 import { CleanOptions } from 'clean-deep';
@@ -120,7 +120,7 @@ export const ptrGet = <T>(source: any, ptr: string): T => {
 
     return ptr === '/' ?
         source :
-        get(source, ptr);
+        jsonPointer.get(source, ptr);
 
 }
 
@@ -130,7 +130,7 @@ export const ptrSet = (source: any, ptr: string, val: any) => {
 
         return ptr === '/' ?
             voidObject(source, val) :
-            set(source, ptr, val);
+            jsonPointer.set(source, ptr, val);
 
     }
     catch { }
@@ -143,7 +143,7 @@ export const ptrHas = (source: any, ptr: string) => {
 
         return ptr === '/' ?
             typeof source != 'undefined' :
-            has(source, ptr);
+            jsonPointer.has(source, ptr);
 
     }
     catch { }
@@ -154,7 +154,7 @@ export const ptrRemove = (source: any, ptr: string) => {
 
     try {
 
-        remove(source, ptr);
+        jsonPointer.remove(source, ptr);
 
     }
     catch { }

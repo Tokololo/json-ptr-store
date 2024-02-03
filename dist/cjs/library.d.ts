@@ -1,4 +1,4 @@
-/// <reference types="json-pointer" />
+import jsonPointer from 'json-pointer';
 import { CleanOptions } from 'clean-deep';
 /**
  * The strictness values used by the default comparer
@@ -19,7 +19,7 @@ export declare const removeDeepUndefined: <T>(obj: T, no_clone?: boolean, option
 export declare const strictnessEqualComparer: <Strictness extends string = strictnessType>(obj1: any, obj2: any, strictness?: Strictness, comparer?: customStrictnessComparerType<Strictness> | undefined) => boolean;
 export declare const distinctUntilChangedEq: <T, Strictness extends string = strictnessType>(strictness?: Strictness, comparer?: customStrictnessComparerType<Strictness> | undefined) => import("rxjs").MonoTypeOperatorFunction<T>;
 export declare const ptrGet: <T>(source: any, ptr: string) => T;
-export declare const ptrSet: (source: any, ptr: string, val: any) => void | import("json-pointer").Api;
+export declare const ptrSet: (source: any, ptr: string, val: any) => void | jsonPointer.Api;
 export declare const ptrHas: (source: any, ptr: string) => boolean | undefined;
 export declare const ptrRemove: (source: any, ptr: string) => void;
 export declare function cloneJson<T>(value: T): T | undefined;

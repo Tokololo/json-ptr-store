@@ -16,12 +16,13 @@ class Store {
      * @param _comparer Optional supplemental comparer to use with a custom defined strictness: (obj1: any, obj2: any, strictness: string) => boolean
      */
     constructor(initial, _flags, _comparer) {
+        var _a;
         this._flags = _flags;
         this._comparer = _comparer;
         this._sub = new rxjs_1.BehaviorSubject({ last_set_ptrs: [], value: {} });
         this._running = true;
         this._flags = this._flags || {};
-        if (!this._flags?.strictness)
+        if (!((_a = this._flags) === null || _a === void 0 ? void 0 : _a.strictness))
             this._flags.strictness = 'none';
         if (initial)
             this._sub.next({ last_set_ptrs: ['/'], value: (0, lodash_1.isPlainObject)(initial) ? initial : {} });
@@ -41,7 +42,8 @@ class Store {
      * @param flags Flags to control the bahavior: { nextTick?: boolean }. If nextTick is set it is done on a timeout.
      */
     setDel(sets, dels, flags) {
-        if (flagValue(flags?.nextTick, this._flags?.nextTick))
+        var _a;
+        if (flagValue(flags === null || flags === void 0 ? void 0 : flags.nextTick, (_a = this._flags) === null || _a === void 0 ? void 0 : _a.nextTick))
             setTimeout(() => this._setDel(sets, dels), 0);
         else
             this._setDel(sets, dels);
@@ -59,7 +61,8 @@ class Store {
      * @param flags Flags to control the bahavior: { nextTick?: boolean }. If nextTick is set it is done on a timeout.
      */
     set(data, flags) {
-        if (flagValue(flags?.nextTick, this._flags?.nextTick))
+        var _a;
+        if (flagValue(flags === null || flags === void 0 ? void 0 : flags.nextTick, (_a = this._flags) === null || _a === void 0 ? void 0 : _a.nextTick))
             setTimeout(() => this._set(data), 0);
         else
             this._set(data);
@@ -83,10 +86,11 @@ class Store {
      * @param flags Flags to control the bahavior: { nextTick?: boolean, atomic?: boolean }. If nextTick is set it is done on a timeout. If atomic is set pointer operations only take effect on completion of all operations.
      */
     del(ptrs, flags) {
-        if (flagValue(flags?.nextTick, this._flags?.nextTick))
-            setTimeout(() => this._del(ptrs, flags?.atomic), 0);
+        var _a;
+        if (flagValue(flags === null || flags === void 0 ? void 0 : flags.nextTick, (_a = this._flags) === null || _a === void 0 ? void 0 : _a.nextTick))
+            setTimeout(() => this._del(ptrs, flags === null || flags === void 0 ? void 0 : flags.atomic), 0);
         else
-            this._del(ptrs, flags?.atomic);
+            this._del(ptrs, flags === null || flags === void 0 ? void 0 : flags.atomic);
     }
     /**
      * Assign array/object literal values to the store
@@ -98,7 +102,7 @@ class Store {
         if ((0, lodash_1.isArray)(val) && (0, lodash_1.isArray)(data.value))
             this.set([{ ptr: data.ptr, value: [...val, ...data.value] }], { nextTick });
         else if ((0, lodash_1.isPlainObject)(val) && (0, lodash_1.isPlainObject)(data.value))
-            this.set([{ ptr: data.ptr, value: { ...val, ...data.value } }], { nextTick });
+            this.set([{ ptr: data.ptr, value: Object.assign(Object.assign({}, val), data.value) }], { nextTick });
         else
             this.set([data], { nextTick });
     }
@@ -140,4 +144,3 @@ class Store {
     }
 }
 exports.Store = Store;
-//# sourceMappingURL=store.js.map
