@@ -7,6 +7,11 @@ test('create the store', () => {
     expect(store instanceof Store).toBe(true);
 });
 
+test('store has initial value', () => {
+    const store = new Store();
+    expect(store.slice<any>('/')).toEqual({});
+});
+
 test('slice the root value of the store', () => {
     const store = new Store({ hello: 'world' });
     expect(store.slice<any>('/')).toEqual({ hello: 'world' });
@@ -89,6 +94,14 @@ test('get the initial value in the store', (done) => {
         expect(res).toBe('hello');
         done();
     })
+});
+
+test('get a non existing value in the store', (done) => {
+    const store = new Store();
+    store.get('/test').pipe(take(1)).subscribe(res => {
+        expect(res).toEqual(undefined);
+        done();
+    });
 });
 
 test('get the newly set values in the store', (done) => {

@@ -1,4 +1,4 @@
-import jsonPointer from 'json-pointer';
+import { remove, get, set, has } from 'json-pointer';
 import { cloneDeep, isArray, isEqual, isPlainObject, mapValues } from 'lodash';
 import { distinctUntilChanged } from 'rxjs';
 import { CleanOptions } from 'clean-deep';
@@ -116,11 +116,16 @@ export const distinctUntilChangedEq = <T, Strictness extends string = strictness
     strictness: Strictness = 'none' as Strictness,
     comparer?: customStrictnessComparerType<Strictness>) => distinctUntilChanged<T>((a, b) => strictnessEqualComparer(a, b, strictness, comparer));
 
-export const ptrGet = <T>(source: any, ptr: string): T => {
+export const ptrGet = <T>(source: any, ptr: string): T | undefined => {
 
-    return ptr === '/' ?
-        source :
-        jsonPointer.get(source, ptr);
+    try {
+
+        return ptr === '/' ?
+            source :
+            get(source, ptr);
+
+    }
+    catch { }
 
 }
 
@@ -130,7 +135,7 @@ export const ptrSet = (source: any, ptr: string, val: any) => {
 
         return ptr === '/' ?
             voidObject(source, val) :
-            jsonPointer.set(source, ptr, val);
+            set(source, ptr, val);
 
     }
     catch { }
@@ -143,7 +148,7 @@ export const ptrHas = (source: any, ptr: string) => {
 
         return ptr === '/' ?
             typeof source != 'undefined' :
-            jsonPointer.has(source, ptr);
+            has(source, ptr);
 
     }
     catch { }
@@ -154,7 +159,7 @@ export const ptrRemove = (source: any, ptr: string) => {
 
     try {
 
-        jsonPointer.remove(source, ptr);
+        remove(source, ptr);
 
     }
     catch { }

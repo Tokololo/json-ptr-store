@@ -1,20 +1,19 @@
 import { BehaviorSubject, filter, map, Observable, takeWhile } from "rxjs";
 import { isArray, isPlainObject } from "lodash";
-import { cloneJson, distinctUntilChangedEq, longestCommonPrefix, ptrGet, ptrRemove, ptrSet, removeDeepUndefined, strictnessEqualComparer, strictnessType, customStrictnessComparerType } from "./library";
-
-interface IStoreValue { [tag: string]: any }
-interface IStorePtr { ptr: string, value: any }
-interface IStoreFlags<Strictness extends string = strictnessType> {
-    nextTick?: boolean,
-    strictness?: Strictness
-}
+import { cloneJson, distinctUntilChangedEq, longestCommonPrefix, ptrGet, ptrRemove, ptrSet, removeDeepUndefined, strictnessType, customStrictnessComparerType } from "./library";
 
 const flagValue = (flag1?: boolean, flag2?: boolean) =>
     typeof flag1 === 'boolean' ?
         flag1 :
         flag2;
 
-export { strictnessEqualComparer, strictnessType, IStoreFlags }
+interface IStoreValue { [tag: string]: any }
+interface IStorePtr { ptr: string, value: any }
+
+export interface IStoreFlags<Strictness extends string = strictnessType> {
+    nextTick?: boolean,
+    strictness?: Strictness
+}
 
 export class Store<Strictness extends string = strictnessType> {
 
@@ -144,7 +143,7 @@ export class Store<Strictness extends string = strictnessType> {
      * @param strictness Override store configured strictness
      * @returns An observable that emits on changes at the json pointer path
      */
-    get<T = any>(ptr: string, strictness?: Strictness): Observable<T> {
+    get<T = any>(ptr: string, strictness?: Strictness): Observable<T | undefined> {
 
         let n = 0;
 
@@ -153,7 +152,7 @@ export class Store<Strictness extends string = strictnessType> {
             filter(value =>
                 (n++ == 0) ||
                 (value.last_set_ptrs.some(lptr => lptr.indexOf(ptr) == 0 || ptr.indexOf(lptr) == 0))),
-            map(value => ptrGet<T>(value.value, ptr)),
+            map(value => ptrGet<any>(value.value, ptr)),
             distinctUntilChangedEq<T, Strictness>(strictness || this._flags!.strictness!, this._comparer)
         );
 
