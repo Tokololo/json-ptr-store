@@ -8,7 +8,7 @@ You create a new instance of the store as follows:
 
 It has the following parameters:
 - initial - Optional initial values for the store. Must be an object literal.
-- flags: { nextTick?: boolean, strictness?: 'isEqualRemoveUndefinedSorted' | 'isEqualRemoveUndefined' | 'isEqual' | 'strict' | 'none' | string }
+- flags: { nextTick?: boolean, strictness?: 'isEqualRemoveUndefinedSorted' | 'isEqualRemoveUndefined' | 'isEqual' | 'strict' | 'none' | string }  
 **nextTick** - run a set on the next tick timeout  
 **strictness** - the strictness to use when comparing previous and current values. It has the following meaning:  
 *string* - user defined for use with supplemental comparer  

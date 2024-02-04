@@ -7,8 +7,8 @@ const flagValue = (flag1?: boolean, flag2?: boolean) =>
         flag1 :
         flag2;
 
-interface IStoreValue { [tag: string]: any }
-interface IStorePtr { ptr: string, value: any }
+export interface IStoreValue { [tag: string]: any }
+export interface IStorePtr { ptr: string, value: any }
 
 export interface IStoreFlags<Strictness extends string = strictnessType> {
     nextTick?: boolean,

@@ -1,6 +1,6 @@
 {
     "name": "@tokololo/json-ptr-store",
-    "version": "1.0.13",
+    "version": "1.0.14",
     "description": "A json pointer and rxjs enabled reactive store",
     "main": "./dist/index.js",
     "module": "./dist/index.js",
@@ -11,7 +11,7 @@
         "README.md"
     ],
     "scripts": {
-        "build": "tsup",
+        "build": "tsc",
         "prepare": "npm run build",
         "test": "jest"
     },
@@ -41,7 +41,6 @@
         "jest": "^29.7.0",
         "ts-jest": "^29.1.2",
         "ts-node": "^10.9.2",
-        "tsup": "^8.0.1",
         "typescript": "^5.3.3"
     },
     "dependencies": {
