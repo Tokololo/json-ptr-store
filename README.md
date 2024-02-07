@@ -1,22 +1,22 @@
-# What is PtrStore?
+# What is json-ptr-store?
 json-ptr-store is a rxjs enabled reactive store that uses json pointers to get and set values.
 # How to use
 ## Creating an instance of the store
 You create a new instance of the store as follows:
 
-    const store = new Store(initial, comparer, flags);
+    const store = new Store(initial, flags, comparer);
 
 It has the following parameters:
 - initial - Optional initial values for the store. Must be an object literal.
-- flags: { nextTick?: boolean, strictness?: 'isEqualRemoveUndefinedSorted' | 'isEqualRemoveUndefined' | 'isEqual' | 'strict' | 'none' | string }  
-**nextTick** - run a set on the next tick timeout  
-**strictness** - the strictness to use when comparing previous and current values. It has the following meaning:  
-*string* - user defined for use with supplemental comparer  
-*none* - no comparison is done and the store get function will retrieve the value even if it is the same as the previous value. This is the default and fastest method of comparison and will satisfy the majority of all use cases.  
-*strict* - stict equality === comparison  
-*isEqual* - lodash isEqual  
-*isEqualRemoveUndefined* - lodash isEqual with both objects stripped of empty values  
-*isEqualRemoveUndefinedSorted* - lodash isEqual with both objects stripped of empty values and internally sorted. This is the slowest most precise method of comparison and is rarely needed.  
+- flags: { nextTick?: boolean, strictness?: 'isEqualRemoveUndefinedSorted' | 'isEqualRemoveUndefined' | 'isEqual' | 'strict' | 'none' | string }
+  - nextTick - run a set on the next tick timeout  
+  - strictness - the strictness to use when comparing previous and current values. It has the following meaning:  
+     - string - user defined for use with supplemental comparer  
+     - none - no comparison is done and the store get function will retrieve the value even if it is the same as the previous value. This is the default and fastest method of comparison and will satisfy the majority of all use cases.  
+     - strict - stict equality === comparison  
+     - isEqual - lodash isEqual  
+     - isEqualRemoveUndefined - lodash isEqual with both objects stripped of empty values  
+     - isEqualRemoveUndefinedSorted - lodash isEqual with both objects stripped of empty values and internally sorted. This is the slowest most precise method of comparison and is rarely needed.  
 - comparer: (obj1:  any, obj2:  any, strictness: string) =>  boolean
 Optional supplemental comparer function for determining whether a get observable value has changed. Used with custom string values for strictness.
 ## Setting values
@@ -62,6 +62,7 @@ The store values can also be sliced which returns the value directly, ie:
     store.slice('/pages/welcome/heading/subheadings/4')
 
 will return `'my sub-heading'`
+
 Slice takes a second boolean parameter which when set will return a clone of the data, as well as a third parameter which will return a default value should the sliced value be undefined.
 ## Deleting values
 Values in the store can be deleted via the json pointer to it, ie:

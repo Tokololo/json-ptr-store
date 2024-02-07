@@ -96,7 +96,7 @@ export class Store<Strictness extends string = strictnessType> {
         if (atomic) {
             ptrs.forEach(ptr => ptrSet(val, ptr, undefined));
             const ptr = longestCommonPrefix(ptrs);
-            const value = removeDeepUndefined(ptrGet(val, ptr), true);
+            const value = removeDeepUndefined(ptrGet(val, ptr));
             this.set([{ ptr, value }]);
         }
         else {

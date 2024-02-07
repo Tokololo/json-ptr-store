@@ -64,11 +64,8 @@ export const longestCommonPrefix = (ptrs: string[]) => {
     return prefixParts.length === 1 ? '/' : prefixParts.join('/');
 }
 
-export const removeDeepUndefined = <T>(obj: T, no_clone?: boolean, options?: CleanOptions): T => {
-
-    return cleanDeep(no_clone ? obj : cloneJson(obj), options || CLEAN_DEEP_OPTS) as any;
-
-}
+export const removeDeepUndefined = <T>(obj: T, options?: CleanOptions): T =>
+    cleanDeep(obj, options || CLEAN_DEEP_OPTS) as any;
 
 /**
  * Compare two objects taking strictness constraint into consideration
