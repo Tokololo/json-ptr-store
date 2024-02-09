@@ -1,6 +1,7 @@
 # What is json-ptr-store?
 json-ptr-store is a rxjs enabled reactive store that uses json pointers to get and set values.
 # How to use
+You create an instance of the store, use it as long as you need and when you are done you destroy the store.
 ## Creating an instance of the store
 You create a new instance of the store as follows:
 
@@ -17,7 +18,7 @@ It has the following parameters:
      - isEqual - lodash isEqual  
      - isEqualRemoveUndefined - lodash isEqual with both objects stripped of empty values  
      - isEqualRemoveUndefinedSorted - lodash isEqual with both objects stripped of empty values and internally sorted. This is the slowest most precise method of comparison and is rarely needed.  
-- comparer: (obj1:  any, obj2:  any, strictness: string) =>  boolean
+- comparer: (obj1:  any, obj2:  any, strictness: string) =>  boolean  
 Optional supplemental comparer function for determining whether a get observable value has changed. Used with custom string values for strictness.
 ## Setting values
 You set a new value in the store as follows:
@@ -44,18 +45,20 @@ You subscribe to values in the store as follows:
 
     const obs = store.get('/pages/welcome/heading');
     obs.subscribe(res => console.log(res));
-Any time that the value at the json pointer changes the get observable will  emit the new value. Not only will PtrStore (using its default configuration) detect when the value at '/pages/welcome/heading' changes, but it will also detect should any value along that path change. 
+Any time that the value at the json pointer changes the get observable will  emit the new value. It will also detect should any value along the json ptr path (root or children) change. Hence, if you issue a get at the following path:
 
-    ie: store.set([{ ptr: '/pages/welcome', value: { heading: 'my heading' }}]);
+    '/pages/welcome/items'
 
-This works in both directions, ie:
+it will emit if the value at the following ptrs change:
 
-    store.get('/pages');
+    '/pages/welcome'
+    '/pages/welcome/items/4'
 
-will detect the following set:
+This behavior is influenced by the strictness that is set. If strictness is `none` the new value will emit even if the change that was made results in the same value. If strictness is set as 
+`isEqualRemoveUndefinedSorted` then it will do a deep comparison and only emit if the value is deep unequal.  
+The strictness flag can be set on the store as a whole, or an individual Get() can override it.
 
-    store.set([{ ptr: '/pages/welcome/heading/subheadings/4', value: 'my sub-heading' }]);
-  Get also takes a strictness flag to override the store default.
+You can manually unsubscribe from the observable returned by get() though on store.destroy() all subscriptions will be released.
 ## Slicing values
 The store values can also be sliced which returns the value directly, ie:
 
@@ -72,7 +75,7 @@ An additional flag parameter atomic can be passed which will ensure that the ope
 
     store.del(['/index/0', '/index/1'], { atomic: true });
 
-**Why is this important**
+**Why is this important?**  
 Using the following data structure:
 
     { 
@@ -99,6 +102,5 @@ Destroy the store when you are done with it to free up resources:
     store.destroy();
 ## A few additional operations
 For convenience you can set and delete in one method call `setDel` as well as `assign` data (array append or object literal assign).
-## Why is it awesome
-Setting, slicing and subscribing using json pointers are intuitive an easy. Because get() returns an observable you can combine, transform, slice and dice to great comprexity and it remains reactive. 
-
+## A note on observables
+Setting, slicing and subscribing using json pointers are intuitive an easy. Because get() returns an observable you can combine, transform, slice and dice to great complexity and it remains reactive. 
