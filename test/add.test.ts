@@ -79,7 +79,7 @@ test('set a value at an non-existing array index in the store #5', () => {
 test('set a value at an non-existing array index at a undefined root in the store', () => {
     const store = new Store({ myarray: undefined });
     store.set([{ ptr: '/myarray/0', value: { hi: 1 } }]);
-    expect(store.slice<any>('/')).toEqual({ myarray: undefined });
+    expect(store.slice<any>('/')).toEqual({ myarray: [{ hi: 1 }] });
 });
 
 test('set a scalar value at a undefined root in the store', () => {
@@ -94,52 +94,40 @@ test('set an object at a undefined root in the store', () => {
     expect(store.slice<any>('/')).toEqual({ myprop: { hi: 'test' } });
 });
 
-test('set a value at an non-existing array index in the store using coerce #1', () => {
-    const store = new Store({ myobj: { myarray: undefined, myprop: 4 } }, { coerceUndefinedArray: true });
+test('set a value at an non-existing array index in the store #1', () => {
+    const store = new Store({ myobj: { myarray: undefined, myprop: 4 } });
     store.set([{ ptr: '/myobj/myarray/0', value: 'test' }]);
     expect(store.slice<any>('/')).toEqual({ myobj: { myarray: ['test'], myprop: 4 } });
 });
 
-test('set a value at an non-existing array index in the store using coerce #2', () => {
-    const store = new Store({ myarray: undefined, myprop: 4 }, { coerceUndefinedArray: true });
+test('set a value at an non-existing array index in the store #2', () => {
+    const store = new Store({ myarray: undefined, myprop: 4 });
     store.set([{ ptr: '/myarray/0', value: { hi: 1 } }]);
     expect(store.slice<any>('/')).toEqual({ myarray: [{ hi: 1 }], myprop: 4 });
 });
 
-test('set a value at an non-existing array index in the store using coerce #3', () => {
-    const store = new Store({ myobj: { myarray: undefined, myprop: 4 } }, { coerceUndefinedArray: true });
+test('set a value at an non-existing array index in the store #3', () => {
+    const store = new Store({ myobj: { myarray: undefined, myprop: 4 } });
     store.set([{ ptr: '/myobj/myarray/0', value: { hi: 1 } }]);
     expect(store.slice<any>('/')).toEqual({ myobj: { myarray: [{ hi: 1 }], myprop: 4 } });
 });
 
-test('set a value at an non-existing array index in the store using coerce #4', () => {
-    const store = new Store({ myarray: [], myprop: 4 }, { coerceUndefinedArray: true });
+test('set a value at an non-existing array index in the store #4', () => {
+    const store = new Store({ myarray: [], myprop: 4 });
     store.set([{ ptr: '/myarray/0', value: { hi: 1 } }]);
     expect(store.slice<any>('/')).toEqual({ myarray: [{ hi: 1 }], myprop: 4 });
 });
 
-test('set a value at a non-existing property in the store using coerce #5', () => {
-    const store = new Store({ myobj: undefined, myprop: 4 }, { coerceUndefinedArray: true });
-    store.set([{ ptr: '/myobj/newprop', value: { hi: 1 } }]);
-    expect(store.slice<any>('/')).toEqual({ myobj: { newprop: { hi: 1 } }, myprop: 4 });
-});
-
-test('set a value at a non-existing property in the store using coerce #6', () => {
-    const store = new Store({ myobj: {}, myprop: 4 }, { coerceUndefinedArray: true });
-    store.set([{ ptr: '/myobj/newprop', value: { hi: 1 } }]);
-    expect(store.slice<any>('/')).toEqual({ myobj: { newprop: { hi: 1 } }, myprop: 4 });
-});
-
-test('set a value at a non-existing property in the store using coerce override #1', () => {
+test('set a value at a non-existing property in the store #5', () => {
     const store = new Store({ myobj: undefined, myprop: 4 });
-    store.set([{ ptr: '/myobj/newprop', value: { hi: 1 } }], { coerceUndefinedArray: true });
+    store.set([{ ptr: '/myobj/newprop', value: { hi: 1 } }]);
     expect(store.slice<any>('/')).toEqual({ myobj: { newprop: { hi: 1 } }, myprop: 4 });
 });
 
-test('set a value at a non-existing property in the store using coerce override #2', () => {
-    const store = new Store({ myarray: undefined, myprop: 4 }, { coerceUndefinedArray: true });
-    store.set([{ ptr: '/myarray/0', value: { hi: 1 } }], { coerceUndefinedArray: false });
-    expect(store.slice<any>('/')).toEqual({ myarray: undefined, myprop: 4 });
+test('set a value at a non-existing property in the store #6', () => {
+    const store = new Store({ myobj: {}, myprop: 4 });
+    store.set([{ ptr: '/myobj/newprop', value: { hi: 1 } }]);
+    expect(store.slice<any>('/')).toEqual({ myobj: { newprop: { hi: 1 } }, myprop: 4 });
 });
 
 test('does a ptr have a value in the store #1', () => {

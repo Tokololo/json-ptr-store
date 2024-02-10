@@ -12,8 +12,7 @@ export interface IStorePtr { ptr: string, value: any }
 
 export interface IStoreFlags<Strictness extends string = strictnessType> {
     nextTick?: boolean,
-    strictness?: Strictness,
-    coerceUndefinedArray?: boolean
+    strictness?: Strictness
 }
 
 export class Store<Strictness extends string = strictnessType> {
@@ -24,7 +23,7 @@ export class Store<Strictness extends string = strictnessType> {
     /**
      * Store Constructor
      * @param initial Optional initial object literal value to seed the store with
-     * @param _flags Optional flags: { nextTick?: boolean, strictness?: string }. Default is { nextTick?: false, strictness?: 'none' }
+     * @param _flags Optional flags: { nextTick?: boolean, strictness?: string }. Default is { strictness?: 'none' }
      * @param _comparer Optional supplemental comparer to use with a custom defined strictness: (obj1: any, obj2: any, strictness: string) => boolean
      */
     constructor(
@@ -42,9 +41,9 @@ export class Store<Strictness extends string = strictnessType> {
 
     }
 
-    private _setDel(sets: IStorePtr[], dels: string[], coerceUndefinedArray?: boolean) {
+    private _setDel(sets: IStorePtr[], dels: string[]) {
         const val = this._sub.value.value;
-        sets.forEach(datum => ptrSet(val, datum.ptr, datum.value, coerceUndefinedArray || this._flags?.coerceUndefinedArray));
+        sets.forEach(datum => ptrSet(val, datum.ptr, datum.value));
         dels.forEach(ptr => ptrRemove(val, ptr));
         const ptrs = [...sets.map(s => s.ptr), ...dels];
         if (ptrs.length)
@@ -57,20 +56,20 @@ export class Store<Strictness extends string = strictnessType> {
      * @param dels The json pointer paths to delete: string[]
      * @param flags Flags to control the bahavior: { nextTick?: boolean }. If nextTick is set it is done on a timeout.
      */
-    setDel(sets: IStorePtr[], dels: string[], flags?: { nextTick?: boolean, coerceUndefinedArray?: boolean }) {
+    setDel(sets: IStorePtr[], dels: string[], flags?: { nextTick?: boolean }) {
 
         if (flagValue(flags?.nextTick, this._flags?.nextTick))
-            setTimeout(() => this._setDel(sets, dels), 0, flags?.coerceUndefinedArray);
+            setTimeout(() => this._setDel(sets, dels), 0);
         else
-            this._setDel(sets, dels, flags?.coerceUndefinedArray);
+            this._setDel(sets, dels);
 
     }
 
-    private _set(data: IStorePtr[], coerceUndefinedArray?: boolean) {
+    private _set(data: IStorePtr[]) {
 
         const val = this._sub.value.value;
         data.forEach(datum =>
-            ptrSet(val, datum.ptr, datum.value, flagValue(coerceUndefinedArray, this._flags?.coerceUndefinedArray))
+            ptrSet(val, datum.ptr, datum.value)
         );
         const ptrs = data.map(s => s.ptr);
         if (ptrs.length)
@@ -83,12 +82,12 @@ export class Store<Strictness extends string = strictnessType> {
      * @param data The pointer path values to set: { ptr: string, value: any }[]
      * @param flags Flags to control the bahavior: { nextTick?: boolean }. If nextTick is set it is done on a timeout.
      */
-    set(data: IStorePtr[], flags?: { nextTick?: boolean, coerceUndefinedArray?: boolean }) {
+    set(data: IStorePtr[], flags?: { nextTick?: boolean }) {
 
         if (flagValue(flags?.nextTick, this._flags?.nextTick))
-            setTimeout(() => this._set(data), 0, flags?.coerceUndefinedArray);
+            setTimeout(() => this._set(data), 0);
         else
-            this._set(data, flags?.coerceUndefinedArray);
+            this._set(data);
 
     }
 

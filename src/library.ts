@@ -1,4 +1,5 @@
-import { remove, get, set, has } from 'json-pointer';
+import { remove, get, has } from 'json-pointer';
+import { set } from 'jsonpointer';
 import { cloneDeep, isArray, isEqual, isPlainObject, mapValues } from 'lodash';
 import { distinctUntilChanged } from 'rxjs';
 import { CleanOptions } from 'clean-deep';
