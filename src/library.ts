@@ -1,5 +1,5 @@
-import { remove, get, has } from 'json-pointer';
-import { set } from 'jsonpointer';
+import { remove, get, has, set } from 'json-pointer';
+import { set as pset } from 'jsonpointer';
 import { cloneDeep, isArray, isEqual, isPlainObject, mapValues } from 'lodash';
 import { distinctUntilChanged } from 'rxjs';
 import { CleanOptions } from 'clean-deep';
@@ -127,40 +127,13 @@ export const ptrGet = <T>(source: any, ptr: string): T | undefined => {
 
 }
 
-const ptrCoerceSet = (source: any, ptr: string, val: any) => {
-
-    try {
-
-        const originalPtrParts = ptr.split('/');
-        let ptrParts = [...originalPtrParts];
-
-        while (ptrParts.length) {
-
-            if (has(source, ptrParts.join('/')))
-                break;
-
-            ptrParts = ptrParts.slice(0, -1);
-
-        }
-
-        if (ptrParts.length === originalPtrParts.length)
-            return set(source, ptr, val);
-
-        ptrRemove(source, ptrParts.join('/'));
-        return set(source, ptr, val);
-
-    }
-    catch { }
-
-}
-
-export const ptrSet = (source: any, ptr: string, val: any, coerceUndefinedArray?: boolean) => {
+export const ptrSet = (source: any, ptr: string, val: any) => {
 
     try {
 
         return ptr === '/' ?
             voidObject(source, val) :
-            (coerceUndefinedArray ? ptrCoerceSet(source, ptr, val) : set(source, ptr, val));
+            pset(source, ptr, val);
 
     }
     catch { }

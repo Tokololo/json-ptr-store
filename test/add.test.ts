@@ -34,10 +34,16 @@ test('set an array value in the store', () => {
     expect(store.slice<any>('/')).toEqual({ myarray: [1, 2, 3] });
 });
 
-test('add a value to the end of an array in the store', () => {
+test('add a value to the end of an array in the store #1', () => {
     const store = new Store({ myarray: [1, 2, 3] });
     store.set([{ ptr: '/myarray/-', value: 4 }]);
     expect(store.slice<any>('/')).toEqual({ myarray: [1, 2, 3, 4] });
+});
+
+test('add a value to the end of an array in the store #2', () => {
+    const store = new Store();
+    store.set([{ ptr: '/myarray/-', value: 4 }]);
+    expect(store.slice<any>('/')).toEqual({ myarray: [4] });
 });
 
 test('set a value at an array index in the store', () => {
