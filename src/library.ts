@@ -126,13 +126,40 @@ export const ptrGet = <T>(source: any, ptr: string): T | undefined => {
 
 }
 
-export const ptrSet = (source: any, ptr: string, val: any) => {
+const ptrCoerceSet = (source: any, ptr: string, val: any) => {
+
+    try {
+
+        const originalPtrParts = ptr.split('/');
+        let ptrParts = [...originalPtrParts];
+
+        while (ptrParts.length) {
+
+            if (has(source, ptrParts.join('/')))
+                break;
+
+            ptrParts = ptrParts.slice(0, -1);
+
+        }
+
+        if (ptrParts.length === originalPtrParts.length)
+            return set(source, ptr, val);
+
+        ptrRemove(source, ptrParts.join('/'));
+        return set(source, ptr, val);
+
+    }
+    catch { }
+
+}
+
+export const ptrSet = (source: any, ptr: string, val: any, coerceUndefinedArray?: boolean) => {
 
     try {
 
         return ptr === '/' ?
             voidObject(source, val) :
-            set(source, ptr, val);
+            (coerceUndefinedArray ? ptrCoerceSet(source, ptr, val) : set(source, ptr, val));
 
     }
     catch { }
@@ -149,6 +176,38 @@ export const ptrHas = (source: any, ptr: string) => {
 
     }
     catch { }
+
+}
+
+export const ptrTypeof = (source: any, ptr: string) => {
+
+    try {
+
+        if (ptr === '/')
+            return typeof source;
+        return typeof get(source, ptr);
+
+    }
+    catch {
+        return "undefined";
+    }
+
+}
+
+const parentPtr = (ptr: string) => {
+
+    if (ptr === '/')
+        return undefined;
+    return ptr.split('/').slice(0, -1).join('/');
+
+}
+
+
+export const ptrHasParent = (source: any, ptr: string) => {
+
+    if (ptr === '/')
+        return false;
+    return has(source, parentPtr(ptr)!);
 
 }
 

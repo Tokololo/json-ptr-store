@@ -3,6 +3,7 @@ json-ptr-store is a rxjs enabled reactive store that uses json pointers to get a
 # How to use
 You create an instance of the store, use it as long as you need and when you are done you destroy the store.
 ## Creating an instance of the store
+### constructor(initial?:  IStoreValue, private  _flags?:  StoreFlags<Strictness>, private  _comparer?:  customStrictnessComparerType<Strictness>)
 You create a new instance of the store as follows:
 
     const store = new Store(initial, flags, comparer);
@@ -11,6 +12,7 @@ It has the following parameters:
 - initial - Optional initial values for the store. Must be an object literal.
 - flags: { nextTick?: boolean, strictness?: 'isEqualRemoveUndefinedSorted' | 'isEqualRemoveUndefined' | 'isEqual' | 'strict' | 'none' | string }
   - nextTick - run a set on the next tick timeout  
+  - coerceUndefinedArray - if true will coerce an array set to parent property with undefined as its value. If false the set will fail.
   - strictness - the strictness to use when comparing previous and current values. It has the following meaning:  
      - string - user defined for use with supplemental comparer  
      - none - no comparison is done and the store get function will retrieve the value even if it is the same as the previous value. This is the default and fastest method of comparison and will satisfy the majority of all use cases.  
@@ -21,6 +23,7 @@ It has the following parameters:
 - comparer: (obj1:  any, obj2:  any, strictness: string) =>  boolean  
 Optional supplemental comparer function for determining whether a get observable value has changed. Used with custom string values for strictness.
 ## Setting values
+### set(data:  IStorePtr[], flags?: { nextTick?:  boolean, coerceUndefinedArray?:  boolean }): void
 You set a new value in the store as follows:
 
     store.set([{ ptr: '/pages/welcome/heading', value: "Hi there" }]); 
@@ -28,7 +31,7 @@ Set takes an array of pointer values and hence multiple values can be set in one
 Array values can be set and appended. For instance, if you have the following store values: 
 
     {
-    	notesRead: [1, 2, 3]
+        notesRead: [1, 2, 3]
     }
 
 You can alter the value at index 1 as follows:
@@ -39,8 +42,29 @@ You can append a value as follows:
 
      store.set([{ ptr: '/notesRead/-', value: 4 }]);
 
- You can also set a value at a non-existing index and it will pad the entries with undefined.
+You can also set a value at a non-existing index and it will pad the entries with undefined.
+
+### Using coerceUndefinedArray
+coerceUndefinedArray is set on the store flag options property or can be individually overriden per set().
+
+The following set will fail because `'/myArray'` has a value but it's type is undefined:
+
+    const store = new Store({ myArray: undefined });
+    store.set([{ ptr: '/myArray/0', value: 4 }]);
+There are two way to ensure that the set will succeed:
+1. Set the value in the store as follows:
+###
+    const store = new Store({ myArray: [] });
+    or
+    const store = new Store({  });
+
+2. Or use the coerceUndefinedArray flag:
+###
+    const store = new Store({ myArray: undefined });
+    store.set([{ ptr: '/myArray/0', value: 4 }], { coerceUndefinedArray:  true });
+
 ## Getting values
+### get<T  =  any>(ptr:  string, strictness?:  Strictness):  Observable<T  |  undefined>
 You subscribe to values in the store as follows:
 
     const obs = store.get('/pages/welcome/heading');
@@ -60,6 +84,7 @@ The strictness flag can be set on the store as a whole, or an individual Get() c
 
 You can manually unsubscribe from the observable returned by get() though on store.destroy() all subscriptions will be released.
 ## Slicing values
+### slice<T  =  any>(ptr:  string, clone?:  boolean, defaultValue?:  T):  T  |  undefined
 The store values can also be sliced which returns the value directly, ie:
 
     store.slice('/pages/welcome/heading/subheadings/4')
@@ -68,6 +93,7 @@ will return `'my sub-heading'`
 
 Slice takes a second boolean parameter which when set will return a clone of the data, as well as a third parameter which will return a default value should the sliced value be undefined.
 ## Deleting values
+### del(ptrs:  string[], flags?: { nextTick?:  boolean, atomic?:  boolean }): void
 Values in the store can be deleted via the json pointer to it, ie:
 
     store.del(['/pages/home/heading', '/pages/home/index/4']);
@@ -79,7 +105,7 @@ An additional flag parameter atomic can be passed which will ensure that the ope
 Using the following data structure:
 
     { 
-    	index: [1, 2, 3, 4, 5];
+        index: [1, 2, 3, 4, 5];
     }
 If you issue the following delete:
 
@@ -95,12 +121,32 @@ Hence the following is equavalent:
 
     store.del(['/index/0', '/index/1'], { atomic: true });
     store.del(['/index/0', '/index/0']);
-Please note that atomic has a slight side-effect. Internally it sets the value at each json pointer to undefined after which it removes all undefined values at the common pointer. Should you have undefined values along that common pointer that was not part of the delete they will also be deleted. For the most part this should not cause problems as a get to an esxisting path with an undefined value functions the same as a get to a non-existing path.
+Please note that atomic has a slight side-effect. Internally it sets the value at each json pointer to undefined after which it removes all undefined values at the common pointer. Should you have undefined values along that common pointer that was not part of the delete they will also be deleted. For the most part this should not cause problems as a get to an existing path with an undefined value functions the same as a get to a non-existing path.
 ## Destroying the store
 Destroy the store when you are done with it to free up resources:
 
     store.destroy();
 ## A few additional operations
-For convenience you can set and delete in one method call `setDel` as well as `assign` data (array append or object literal assign).
+### setDel(sets:  IStorePtr[], dels:  string[], flags?: { nextTick?:  boolean, coerceUndefinedArray?:  boolean })
+Set and delete in one method call
+### assign(data: { ptr:  string, value:  any[] |  Object }, nextTick?:  boolean)
+Assign data (array append or object literal assign)
+### has(ptr:  string):  boolean  |  undefined
+Returns true if the store has a value at the json pointer. Note that should the store be defined as follows it will be deemed to have a value for the following pointer:
+
+    const store = new Store({ myArray: undefined });
+    store.has('/myArray); // returns true
+### typeof(ptr:  string): "string"  |  "number"  |  "bigint"  |  "boolean"  |  "symbol"  |  "undefined"  |  "object"  |  "function"
+Returns the type of the json pointer value in the store. Note that the following two pointers will both return "undefined":
+
+    const store = new Store({ myArray: undefined });
+    store.typeof('/myArray') == store.typeof('/bogus') == 'undefined'
+### hasParent(ptr:  string): boolean
+Returns whether a json pointer has a parent in the store. It functions similarly to has().
 ## A note on observables
 Setting, slicing and subscribing using json pointers are intuitive an easy. Because get() returns an observable you can combine, transform, slice and dice to great complexity and it remains reactive. 
+
+    cons obs$ = forkJoin([
+        store.get('/users/10').pipe(map(user => user.posts)),
+        store.get('/users/10').pipe(switchMap(user => getFetchUserPrefsObservable$(user.id)))	
+    ]);

@@ -1,18 +1,19 @@
 import { BehaviorSubject, filter, map, Observable, takeWhile } from "rxjs";
 import { isArray, isPlainObject } from "lodash";
-import { cloneJson, distinctUntilChangedEq, longestCommonPrefix, ptrGet, ptrRemove, ptrSet, removeDeepUndefined, strictnessType, customStrictnessComparerType } from "./library";
+import { cloneJson, distinctUntilChangedEq, longestCommonPrefix, ptrGet, ptrRemove, ptrSet, removeDeepUndefined, strictnessType, customStrictnessComparerType, ptrHas, ptrTypeof, ptrHasParent } from "./library";
 
-const flagValue = (flag1?: boolean, flag2?: boolean) =>
-    typeof flag1 === 'boolean' ?
-        flag1 :
-        flag2;
+const flagValue = (overrideFlag: boolean | undefined, flag: boolean | undefined) =>
+    typeof overrideFlag === 'boolean' ?
+        overrideFlag :
+        flag;
 
 export interface IStoreValue { [tag: string]: any }
 export interface IStorePtr { ptr: string, value: any }
 
 export interface IStoreFlags<Strictness extends string = strictnessType> {
     nextTick?: boolean,
-    strictness?: Strictness
+    strictness?: Strictness,
+    coerceUndefinedArray?: boolean
 }
 
 export class Store<Strictness extends string = strictnessType> {
@@ -41,9 +42,9 @@ export class Store<Strictness extends string = strictnessType> {
 
     }
 
-    private _setDel(sets: IStorePtr[], dels: string[]) {
+    private _setDel(sets: IStorePtr[], dels: string[], coerceUndefinedArray?: boolean) {
         const val = this._sub.value.value;
-        sets.forEach(datum => ptrSet(val, datum.ptr, datum.value));
+        sets.forEach(datum => ptrSet(val, datum.ptr, datum.value, coerceUndefinedArray || this._flags?.coerceUndefinedArray));
         dels.forEach(ptr => ptrRemove(val, ptr));
         const ptrs = [...sets.map(s => s.ptr), ...dels];
         if (ptrs.length)
@@ -56,19 +57,21 @@ export class Store<Strictness extends string = strictnessType> {
      * @param dels The json pointer paths to delete: string[]
      * @param flags Flags to control the bahavior: { nextTick?: boolean }. If nextTick is set it is done on a timeout.
      */
-    setDel(sets: IStorePtr[], dels: string[], flags?: { nextTick?: boolean }) {
+    setDel(sets: IStorePtr[], dels: string[], flags?: { nextTick?: boolean, coerceUndefinedArray?: boolean }) {
 
         if (flagValue(flags?.nextTick, this._flags?.nextTick))
-            setTimeout(() => this._setDel(sets, dels), 0);
+            setTimeout(() => this._setDel(sets, dels), 0, flags?.coerceUndefinedArray);
         else
-            this._setDel(sets, dels);
+            this._setDel(sets, dels, flags?.coerceUndefinedArray);
 
     }
 
-    private _set(data: IStorePtr[]) {
+    private _set(data: IStorePtr[], coerceUndefinedArray?: boolean) {
 
         const val = this._sub.value.value;
-        data.forEach(datum => ptrSet(val, datum.ptr, datum.value));
+        data.forEach(datum =>
+            ptrSet(val, datum.ptr, datum.value, flagValue(coerceUndefinedArray, this._flags?.coerceUndefinedArray))
+        );
         const ptrs = data.map(s => s.ptr);
         if (ptrs.length)
             this._sub.next({ last_set_ptrs: ptrs, value: val });
@@ -80,12 +83,12 @@ export class Store<Strictness extends string = strictnessType> {
      * @param data The pointer path values to set: { ptr: string, value: any }[]
      * @param flags Flags to control the bahavior: { nextTick?: boolean }. If nextTick is set it is done on a timeout.
      */
-    set(data: IStorePtr[], flags?: { nextTick?: boolean }) {
+    set(data: IStorePtr[], flags?: { nextTick?: boolean, coerceUndefinedArray?: boolean }) {
 
         if (flagValue(flags?.nextTick, this._flags?.nextTick))
-            setTimeout(() => this._set(data), 0);
+            setTimeout(() => this._set(data), 0, flags?.coerceUndefinedArray);
         else
-            this._set(data);
+            this._set(data, flags?.coerceUndefinedArray);
 
     }
 
@@ -155,6 +158,39 @@ export class Store<Strictness extends string = strictnessType> {
             map(value => ptrGet<any>(value.value, ptr)),
             distinctUntilChangedEq<T, Strictness>(strictness || this._flags!.strictness!, this._comparer)
         );
+
+    }
+
+    /**
+     * Check if a json pointer value exists.
+     * @param ptr 
+     * @returns True if the pointer value exists. If the value has an entry of undefined it returns true.
+     */
+    has(ptr: string): boolean | undefined {
+
+        return ptrHas(this._sub.value.value, ptr);
+
+    }
+
+    /**
+     * Return the type of the value at the json pointer.
+     * @param ptr 
+     * @returns True if the value exists, false if it does not exist or is undefined.
+     */
+    typeof(ptr: string) {
+
+        return ptrTypeof(this._sub.value.value, ptr);
+
+    }
+
+    /**
+     * Check if a value at the json poitner parent has a value.
+     * @param ptr 
+     * @returns 
+     */
+    hasParent(ptr: string) {
+
+        return ptrHasParent(this._sub.value.value, ptr);
 
     }
 
