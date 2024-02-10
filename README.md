@@ -12,7 +12,6 @@ It has the following parameters:
 - initial - Optional initial values for the store. Must be an object literal.
 - flags: { nextTick?: boolean, strictness?: 'isEqualRemoveUndefinedSorted' | 'isEqualRemoveUndefined' | 'isEqual' | 'strict' | 'none' | string }
   - nextTick - run a set on the next tick timeout  
-  - coerceUndefinedArray - if true will coerce an array set to parent property with undefined as its value. If false the set will fail.
   - strictness - the strictness to use when comparing previous and current values. It has the following meaning:  
      - string - user defined for use with supplemental comparer  
      - none - no comparison is done and the store get function will retrieve the value even if it is the same as the previous value. This is the default and fastest method of comparison and will satisfy the majority of all use cases.  
@@ -23,7 +22,7 @@ It has the following parameters:
 - comparer: (obj1:  any, obj2:  any, strictness: string) =>  boolean  
 Optional supplemental comparer function for determining whether a get observable value has changed. Used with custom string values for strictness.
 ## Setting values
-### set(data:  IStorePtr[], flags?: { nextTick?:  boolean, coerceUndefinedArray?:  boolean }): void
+### set(data:  IStorePtr[], flags?: { nextTick?:  boolean }): void
 You set a new value in the store as follows:
 
     store.set([{ ptr: '/pages/welcome/heading', value: "Hi there" }]); 
@@ -43,25 +42,6 @@ You can append a value as follows:
      store.set([{ ptr: '/notesRead/-', value: 4 }]);
 
 You can also set a value at a non-existing index and it will pad the entries with undefined.
-
-### Using coerceUndefinedArray
-coerceUndefinedArray is set on the store flag options property or can be individually overriden per set().
-
-The following set will fail because `'/myArray'` has a value but it's type is undefined:
-
-    const store = new Store({ myArray: undefined });
-    store.set([{ ptr: '/myArray/0', value: 4 }]);
-There are two way to ensure that the set will succeed:
-1. Set the value in the store as follows:
-###
-    const store = new Store({ myArray: [] });
-    or
-    const store = new Store({  });
-
-2. Or use the coerceUndefinedArray flag:
-###
-    const store = new Store({ myArray: undefined });
-    store.set([{ ptr: '/myArray/0', value: 4 }], { coerceUndefinedArray:  true });
 
 ## Getting values
 ### get<T  =  any>(ptr:  string, strictness?:  Strictness):  Observable<T  |  undefined>
@@ -127,7 +107,7 @@ Destroy the store when you are done with it to free up resources:
 
     store.destroy();
 ## A few additional operations
-### setDel(sets:  IStorePtr[], dels:  string[], flags?: { nextTick?:  boolean, coerceUndefinedArray?:  boolean })
+### setDel(sets:  IStorePtr[], dels:  string[], flags?: { nextTick?:  boolean })
 Set and delete in one method call
 ### assign(data: { ptr:  string, value:  any[] |  Object }, nextTick?:  boolean)
 Assign data (array append or object literal assign)
