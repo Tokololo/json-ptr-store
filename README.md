@@ -123,6 +123,21 @@ Returns the type of the json pointer value in the store. Note that the following
     store.typeof('/myArray') == store.typeof('/bogus') == 'undefined'
 ### hasParent(ptr:  string): boolean
 Returns whether a json pointer has a parent in the store. It functions similarly to has().
+## Undefined
+It is not possible to append to an array with both the value and the root as undefined:
+
+    const store = new Store({ titles: undefined });
+    store.set([{ ptr: '/titles/-', value: undefined }]);
+You can do it like this:
+
+    const store = new Store({ titles: [] });
+    store.set([{ ptr: '/titles/-', value: undefined }]);
+or like this:
+
+    const store = new Store({ titles: undefined });
+    store.set([{ ptr: '/titles/-', value: 'mytitle' }]);
+
+
 ## A note on observables
 Setting, slicing and subscribing using json pointers are intuitive an easy. Because get() returns an observable you can combine, transform, slice and dice to great complexity and it remains reactive. 
 

@@ -1,5 +1,5 @@
-import { remove, get, has, set } from 'json-pointer';
-import { set as pset } from 'jsonpointer';
+import { remove, get, has, set as undefinedSet } from 'json-pointer';
+import { set } from 'jsonpointer';
 import { cloneDeep, isArray, isEqual, isPlainObject, mapValues } from 'lodash';
 import { distinctUntilChanged } from 'rxjs';
 import { CleanOptions } from 'clean-deep';
@@ -133,7 +133,9 @@ export const ptrSet = (source: any, ptr: string, val: any) => {
 
         return ptr === '/' ?
             voidObject(source, val) :
-            pset(source, ptr, val);
+            (typeof val == 'undefined' ?
+                undefinedSet(source, ptr, val) :
+                set(source, ptr, val));
 
     }
     catch { }

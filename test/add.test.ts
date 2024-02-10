@@ -136,6 +136,66 @@ test('set a value at a non-existing property in the store #6', () => {
     expect(store.slice<any>('/')).toEqual({ myobj: { newprop: { hi: 1 } }, myprop: 4 });
 });
 
+test('set an undefined value at an existing property in the store #1', () => {
+    const store = new Store({ myobj: 4 });
+    store.set([{ ptr: '/myobj', value: undefined }]);
+    expect(store.slice<any>('/')).toEqual({ myobj: undefined });
+    expect(store.has('/myobj')).toEqual(true);
+});
+
+test('set an undefined value at an existing property in the store #2', () => {
+    const store = new Store({ myarr: [] });
+    store.set([{ ptr: '/myarr/0', value: undefined }]);
+    expect(store.slice<any>('/')).toEqual({ myarr: [undefined] });
+    expect(store.has('/myarr/0')).toEqual(true);
+});
+
+test('set an undefined value at an existing property in the store #3', () => {
+    const store = new Store({ myarr: [] });
+    store.set([{ ptr: '/myarr/1', value: undefined }]);
+    expect(store.slice<any>('/')).toEqual({ myarr: [undefined, undefined] });
+    expect(store.slice<any>('/myarr').length).toEqual(2);
+});
+
+test('set an undefined value at an existing property in the store #4', () => {
+    const store = new Store({ myarr: [undefined] });
+    store.set([{ ptr: '/myarr/-', value: undefined }]);
+    expect(store.slice<any>('/')).toEqual({ myarr: [undefined, undefined] });
+    expect(store.slice<any>('/myarr').length).toEqual(2);
+});
+
+test('set an undefined value at an non-existing property in the store #1', () => {
+    const store = new Store();
+    store.set([{ ptr: '/myobj/test', value: undefined }]);
+    expect(store.slice<any>('/')).toEqual({ myobj: { test: undefined } });
+    expect(Object.keys(store.slice<any>('/myobj'))).toEqual(["test"]);
+});
+
+test('set an undefined value at an non-existing property in the store #2', () => {
+    const store = new Store();
+    store.set([{ ptr: '/myarr/-', value: undefined }]);
+    expect(store.slice<any>('/')).toEqual({ myarr: [undefined] });
+    expect(store.slice<any>('/myarr').length).toEqual(1);
+});
+
+test('set a value at an undefined property in the store #1', () => {
+    const store = new Store({ myarr: undefined });
+    store.set([{ ptr: '/myarr/-', value: 5 }]);
+    expect(store.slice<any>('/')).toEqual({ myarr: [5] });
+});
+
+test('set an undefined value at an defined property in the store', () => {
+    const store = new Store({ titles: undefined });
+    store.set([{ ptr: '/titles/-', value: 'mytitle' }]);
+    expect(store.slice<any>('/')).toEqual({ titles: ['mytitle'] });
+});
+
+test('append an array value deeply', () => {
+    const store = new Store();
+    store.set([{ ptr: '/titles/-/color', value: 'red' }]);
+    expect(store.slice<any>('/')).toEqual({ titles: [{ color: 'red' }] });
+});
+
 test('does a ptr have a value in the store #1', () => {
     const store = new Store({ prop: undefined });
     const hasValue = store.has('/prop');
