@@ -60,9 +60,9 @@ it will emit if the value at the following ptrs change:
 
 This behavior is influenced by the strictness that is set. If strictness is `none` the new value will emit even if the change that was made results in the same value. If strictness is set as 
 `isEqualRemoveUndefinedSorted` then it will do a deep comparison and only emit if the value is deep unequal.  
-The strictness flag can be set on the store as a whole, or an individual Get() can override it.
+The strictness flag can be set on the store as a whole, or an individual `get()` can override it.
 
-You can manually unsubscribe from the observable returned by get() though on store.destroy() all subscriptions will be released.
+You can manually unsubscribe from the observable returned by `get()` though on `destroy()` all subscriptions will be released.
 ## Slicing values
 ### slice<T  =  any>(ptr:  string, clone?:  boolean, defaultValue?:  T):  T  |  undefined
 The store values can also be sliced which returns the value directly, ie:
@@ -124,19 +124,30 @@ Returns the type of the json pointer value in the store. Note that the following
 ### hasParent(ptr:  string): boolean
 Returns whether a json pointer has a parent in the store. It functions similarly to has().
 ## Undefined
-It is not possible to append to an array with both the value and the root as undefined:
+It is not possible to do a set() with both the value and the root having a value of undefined:
 
     const store = new Store({ titles: undefined });
     store.set([{ ptr: '/titles/-', value: undefined }]);
-You can do it like this:
+    store.set([{ ptr: '/titles/0', value: undefined }]);
+    store.set([{ ptr: '/titles/mytitle', value: undefined }]);
+The above sets will fail because either the value or the root must have a non-undefined value or the root must not be defined at all (ie return false for has()):
 
     const store = new Store({ titles: [] });
     store.set([{ ptr: '/titles/-', value: undefined }]);
-or like this:
-
+    store.set([{ ptr: '/titles/0', value: undefined }]);
+      or
+    const store = new Store({ titles: {} });
+    store.set([{ ptr: '/titles/mytitle', value: undefined }]);
+      or
+    const store = new Store();
+    store.set([{ ptr: '/titles/-', value: undefined }]);
+    store.set([{ ptr: '/titles/0', value: undefined }]);
+    store.set([{ ptr: '/titles/mytitle', value: undefined }]);
+      or
     const store = new Store({ titles: undefined });
     store.set([{ ptr: '/titles/-', value: 'mytitle' }]);
-
+    store.set([{ ptr: '/titles/0', value: 'mytitle' }]);
+    store.set([{ ptr: '/titles/mytitle', value: 'mytitle' }]);
 
 ## A note on observables
 Setting, slicing and subscribing using json pointers are intuitive an easy. Because get() returns an observable you can combine, transform, slice and dice to great complexity and it remains reactive. 

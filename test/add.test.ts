@@ -178,16 +178,50 @@ test('set an undefined value at an non-existing property in the store #2', () =>
     expect(store.slice<any>('/myarr').length).toEqual(1);
 });
 
+test('set an undefined value at an non-existing property in the store #3', () => {
+    const store = new Store();
+    store.set([{ ptr: '/myarr/1', value: undefined }]);
+    expect(store.slice<any>('/')).toEqual({ myarr: [undefined, undefined] });
+    expect(store.slice<any>('/myarr').length).toEqual(2);
+});
+
+
 test('set a value at an undefined property in the store #1', () => {
     const store = new Store({ myarr: undefined });
     store.set([{ ptr: '/myarr/-', value: 5 }]);
     expect(store.slice<any>('/')).toEqual({ myarr: [5] });
 });
 
-test('set an undefined value at an defined property in the store', () => {
+test('set a value at an undefined property in the store #2', () => {
+    const store = new Store({ myarr: undefined });
+    store.set([{ ptr: '/myarr/0', value: 5 }]);
+    expect(store.slice<any>('/')).toEqual({ myarr: [5] });
+});
+
+test('set a value at an undefined property in the store #3', () => {
+    const store = new Store({ myobj: undefined });
+    store.set([{ ptr: '/myobj/prop', value: 5 }]);
+    expect(store.slice<any>('/')).toEqual({ myobj: { prop: 5 } });
+});
+
+test('set a defined value at an undefined property in the store #1', () => {
     const store = new Store({ titles: undefined });
     store.set([{ ptr: '/titles/-', value: 'mytitle' }]);
     expect(store.slice<any>('/')).toEqual({ titles: ['mytitle'] });
+});
+
+test('set a defined value at an undefined property in the store #2', () => {
+    const store = new Store({ titles: undefined });
+    store.set([{ ptr: '/titles/0', value: 'mytitle' }]);
+    expect(store.slice<any>('/')).toEqual({ titles: ['mytitle'] });
+    expect(store.slice<any>('/titles').length).toEqual(1);
+});
+
+test('set a defined value at an undefined property in the store #3', () => {
+    const store = new Store({ book: undefined });
+    store.set([{ ptr: '/book/title', value: "mytitle" }]);
+    expect(store.slice<any>('/')).toEqual({ book: { title: "mytitle" } });
+    expect(Object.keys(store.slice<any>('/book'))).toEqual(["title"]);
 });
 
 test('append an array value deeply', () => {
