@@ -124,13 +124,13 @@ Returns the type of the json pointer value in the store. Note that the following
 ### hasParent(ptr:  string): boolean
 Returns whether a json pointer has a parent in the store. It functions similarly to has().
 ## Undefined
-It is not possible to do a set() with both the value and the root having a value of undefined:
+It is not possible to do a set() with both the value and any node along the ptr path having an explicit value of undefined:
 
     const store = new Store({ titles: undefined });
     store.set([{ ptr: '/titles/-', value: undefined }]);
     store.set([{ ptr: '/titles/0', value: undefined }]);
     store.set([{ ptr: '/titles/mytitle', value: undefined }]);
-The above sets will fail because either the value or the root must have a non-undefined value or the root must not be defined at all (ie return false for has()):
+The above sets will fail because either the value must be defined or every node along the ptr path must have a defined value; or the value for some node along the ptr path must not be defined at all (ie return false for has()). The below sets will succeed:
 
     const store = new Store({ titles: [] });
     store.set([{ ptr: '/titles/-', value: undefined }]);
