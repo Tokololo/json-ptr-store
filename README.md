@@ -1,8 +1,9 @@
 # What is json-ptr-store?
-json-ptr-store is a rxjs enabled reactive store that uses json pointers to get and set values.
+json-ptr-store is a  [rxjs](https://github.com/reactivex/rxjs) enabled reactive store that uses [json pointers](https://datatracker.ietf.org/doc/html/rfc6901) to get and set values.
+> For the latest documentation please consult the repo  [readme](https://github.com/Tokololo/json-ptr-store#readme).
 # How to use
 You create an instance of the store, use it as long as you need and when you are done you destroy the store.
-## Creating an instance of the store
+## Create an instance of the store
 ### constructor(initial?:  IStoreValue, private  _flags?:  StoreFlags<Strictness>, private  _comparer?:  customStrictnessComparerType<Strictness>)
 You create a new instance of the store as follows:
 
@@ -21,7 +22,7 @@ It has the following parameters:
      - isEqualRemoveUndefinedSorted - lodash isEqual with both objects stripped of empty values and internally sorted. This is the slowest most precise method of comparison and is rarely needed.  
 - comparer: (obj1:  any, obj2:  any, strictness: string) =>  boolean  
 Optional supplemental comparer function for determining whether a get observable value has changed. Used with custom string values for strictness.
-## Setting values
+## Set values
 ### set(data:  IStorePtr[], flags?: { nextTick?:  boolean }): void
 You set a new value in the store as follows:
 
@@ -43,7 +44,7 @@ You can append a value as follows:
 
 You can also set a value at a non-existing index and it will pad the entries with undefined.
 
-## Getting values
+## Get values
 ### get<T  =  any>(ptr:  string, strictness?:  Strictness):  Observable<T  |  undefined>
 You subscribe to values in the store as follows:
 
@@ -63,7 +64,7 @@ This behavior is influenced by the strictness that is set. If strictness is `non
 The strictness flag can be set on the store as a whole, or an individual `get()` can override it.
 
 You can manually unsubscribe from the observable returned by `get()` though on `destroy()` all subscriptions will be released.
-## Slicing values
+## Slice values
 ### slice<T  =  any>(ptr:  string, clone?:  boolean, defaultValue?:  T):  T  |  undefined
 The store values can also be sliced which returns the value directly, ie:
 
@@ -72,7 +73,7 @@ The store values can also be sliced which returns the value directly, ie:
 will return `'my sub-heading'`
 
 Slice takes a second boolean parameter which when set will return a clone of the data, as well as a third parameter which will return a default value should the sliced value be undefined.
-## Deleting values
+## Delete values
 ### del(ptrs:  string[], flags?: { nextTick?:  boolean, atomic?:  boolean }): void
 Values in the store can be deleted via the json pointer to it, ie:
 
@@ -102,7 +103,7 @@ Hence the following is equavalent:
     store.del(['/index/0', '/index/1'], { atomic: true });
     store.del(['/index/0', '/index/0']);
 Please note that atomic has a slight side-effect. Internally it sets the value at each json pointer to undefined after which it removes all undefined values at the common pointer. Should you have undefined values along that common pointer that was not part of the delete they will also be deleted. For the most part this should not cause problems as a get to an existing path with an undefined value functions the same as a get to a non-existing path.
-## Destroying the store
+## Destroy the store
 Destroy the store when you are done with it to free up resources:
 
     store.destroy();
@@ -123,7 +124,7 @@ Returns the type of the json pointer value in the store. Note that the following
     store.typeof('/myArray') == store.typeof('/bogus') == 'undefined'
 ### hasParent(ptr:  string): boolean
 Returns whether a json pointer has a parent in the store. It functions similarly to has().
-## Undefined
+## Undefined*
 It is not possible to do a set() with both the value and any node along the ptr path having an explicit value of undefined:
 
     const store = new Store({ titles: undefined });
