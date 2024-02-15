@@ -136,3 +136,7 @@ Setting, slicing and subscribing using json pointers are intuitive an easy. Beca
           switchMap(user => getFetchUserPrefsObservable$(user.id))
         )	
     ]);
+
+# Change Log
+## version 1.1.5
+ - Remove undefined set limitation
