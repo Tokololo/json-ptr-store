@@ -127,6 +127,37 @@ export const ptrGet = <T>(source: any, ptr: string): T | undefined => {
 
 }
 
+const walkUndefinedSet = (source: any, ptr: string, val: any) => {
+
+    let parts = ptr.split('/');
+
+    while (parts.length > 1) {
+
+        const subPtr = parts.join('/');
+        const type = ptrTypeof(source, subPtr);
+        if (type != 'undefined')
+            break;
+
+        const prtPtr = parentPtr(subPtr);
+        if (prtPtr) {
+
+            const prtValue = ptrGet<any>(source, prtPtr);
+            if (isArray(prtValue)) {
+                undefinedSet(source, ptr, val);
+                return;
+            }
+
+        }
+
+        ptrRemove(source, subPtr);
+        parts = parts.slice(0, -1);
+
+    }
+
+    undefinedSet(source, ptr, val);
+
+}
+
 export const ptrSet = (source: any, ptr: string, val: any) => {
 
     try {
@@ -134,7 +165,7 @@ export const ptrSet = (source: any, ptr: string, val: any) => {
         return ptr === '/' ?
             voidObject(source, val) :
             (typeof val == 'undefined' ?
-                undefinedSet(source, ptr, val) :
+                walkUndefinedSet(source, ptr, val) :
                 set(source, ptr, val));
 
     }
@@ -177,7 +208,6 @@ const parentPtr = (ptr: string) => {
     return ptr.split('/').slice(0, -1).join('/');
 
 }
-
 
 export const ptrHasParent = (source: any, ptr: string) => {
 

@@ -109,11 +109,11 @@ Destroy the store when you are done with it to free up resources:
     store.destroy();
 ## A few additional operations
 ### setDel(sets:  IStorePtr[], dels:  string[], flags?: { nextTick?:  boolean })
-Set and delete in one method call
+Set and delete in one method call.
 ### assign(data: { ptr:  string, value:  any[] |  Object }, nextTick?:  boolean)
-Assign data (array append or object literal assign)
+Assign data (array append or object literal assign). This is a handy shortcut for doing it manually which will entail a slice and a set.
 ### has(ptr:  string):  boolean  |  undefined
-Returns true if the store has a value at the json pointer. Note that should the store be defined as follows it will be deemed to have a value for the following pointer:
+Returns true if the store has an explicit value at the json pointer. Note that should the store be defined as follows it will be deemed to have a value for the following pointer:
 
     const store = new Store({ myArray: undefined });
     store.has('/myArray); // returns true
@@ -124,36 +124,15 @@ Returns the type of the json pointer value in the store. Note that the following
     store.typeof('/myArray') == store.typeof('/bogus') == 'undefined'
 ### hasParent(ptr:  string): boolean
 Returns whether a json pointer has a parent in the store. It functions similarly to has().
-## Undefined*
-It is not possible to do a set() with both the value and any node along the ptr path having an explicit value of undefined:
-
-    const store = new Store({ titles: undefined });
-    store.set([{ ptr: '/titles/-', value: undefined }]);
-    store.set([{ ptr: '/titles/0', value: undefined }]);
-    store.set([{ ptr: '/titles/mytitle', value: undefined }]);
-The above sets will fail because either the value must be defined or every node along the ptr path must have a defined value; or the value for some node along the ptr path must not be defined at all (ie return false for has()). The below sets will succeed:
-
-    const store = new Store({ titles: [] });
-    store.set([{ ptr: '/titles/-', value: undefined }]);
-    store.set([{ ptr: '/titles/0', value: undefined }]);
-      or
-    const store = new Store({ titles: {} });
-    store.set([{ ptr: '/titles/mytitle', value: undefined }]);
-      or
-    const store = new Store();
-    store.set([{ ptr: '/titles/-', value: undefined }]);
-    store.set([{ ptr: '/titles/0', value: undefined }]);
-    store.set([{ ptr: '/titles/mytitle', value: undefined }]);
-      or
-    const store = new Store({ titles: undefined });
-    store.set([{ ptr: '/titles/-', value: 'mytitle' }]);
-    store.set([{ ptr: '/titles/0', value: 'mytitle' }]);
-    store.set([{ ptr: '/titles/mytitle', value: 'mytitle' }]);
 
 ## A note on observables
 Setting, slicing and subscribing using json pointers are intuitive an easy. Because get() returns an observable you can combine, transform, slice and dice to great complexity and it remains reactive. 
 
     cons obs$ = forkJoin([
-        store.get('/users/10').pipe(map(user => user.posts)),
-        store.get('/users/10').pipe(switchMap(user => getFetchUserPrefsObservable$(user.id)))	
+        store.get('/users/10').pipe(  
+          map(user => user.posts)
+        ),
+        store.get('/users/10').pipe(  
+          switchMap(user => getFetchUserPrefsObservable$(user.id))
+        )	
     ]);
