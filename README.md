@@ -82,9 +82,16 @@ You can manually unsubscribe from the observable returned by `get()` though on `
 ### slice<T  =  any>(ptr:  string, clone?:  boolean, defaultValue?:  T):  T  |  undefined
 The store values can also be sliced which returns the value directly, ie:
 
-    store.slice('/pages/welcome/heading/subheadings/4')
+    const store = new Store({
+        pages: {
+            welcome: {
+                heading: "Hi there"
+            }
+        }
+    }); 
+    const heading = store.slice('/pages/welcome/heading');
 
-will return `'my sub-heading'`
+will return `'Hi there'`
 
 Slice takes a second boolean parameter which when set will return a clone of the data, as well as a third parameter which will return a default value should the sliced value be undefined.
 ## Delete values
