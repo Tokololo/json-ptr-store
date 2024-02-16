@@ -1,5 +1,5 @@
 # What is json-ptr-store?
-json-ptr-store is a  [rxjs](https://github.com/reactivex/rxjs) enabled reactive store that uses [json pointers](https://datatracker.ietf.org/doc/html/rfc6901) to get and set values.
+json-ptr-store is a  [rxjs](https://github.com/reactivex/rxjs) enabled reactive store that uses [json pointers](https://datatracker.ietf.org/doc/html/rfc6901) to get and set values. It is intuitive, minimalist yet powerful.
 > For the latest documentation please consult the repo  [readme](https://github.com/Tokololo/json-ptr-store#readme).
 # How to use
 You create an instance of the store, use it as long as you need and when you are done you destroy the store.
@@ -21,7 +21,21 @@ It has the following parameters:
      - isEqualRemoveUndefined - lodash isEqual with both objects stripped of empty values  
      - isEqualRemoveUndefinedSorted - lodash isEqual with both objects stripped of empty values and internally sorted. This is the slowest most precise method of comparison and is rarely needed.  
 - comparer: (obj1:  any, obj2:  any, strictness: string) =>  boolean  
-Optional supplemental comparer function for determining whether a get observable value has changed. Used with custom string values for strictness.
+Optional supplemental comparer function for determining whether a get observable value has changed. Used with custom string values for strictness. The use case for this would be very rare as the default 'none' would suffice for the vast majority of cases.
+
+Below is an example custom comparer function:
+
+    (o1, o2, strictness) => strictness === 'version' && o1.v === o2.v
+which can be invoked as follows:
+
+    useStoreGet<Roles[]>(
+      '/roles',
+      undefined,
+      undefined,
+      undefined,
+      'version'
+    );
+
 ## Set values
 ### set(data:  IStorePtr[], flags?: { nextTick?:  boolean }): void
 You set a new value in the store as follows:
@@ -40,7 +54,7 @@ You can alter the value at index 1 as follows:
 
 You can append a value as follows:
 
-     store.set([{ ptr: '/notesRead/-', value: 4 }]);
+    store.set([{ ptr: '/notesRead/-', value: 4 }]);
 
 You can also set a value at a non-existing index and it will pad the entries with undefined.
 
@@ -111,7 +125,7 @@ Destroy the store when you are done with it to free up resources:
 ### setDel(sets:  IStorePtr[], dels:  string[], flags?: { nextTick?:  boolean })
 Set and delete in one method call.
 ### assign(data: { ptr:  string, value:  any[] |  Object }, nextTick?:  boolean)
-Assign data (array append or object literal assign). This is a handy shortcut for doing it manually which will entail a slice and a set.
+Assign data (array append or object literal assign). This is a handy shortcut for doing it manually which will entail a slice and a set. In addition it creates a new reference.
 ### has(ptr:  string):  boolean  |  undefined
 Returns true if the store has an explicit value at the json pointer. Note that should the store be defined as follows it will be deemed to have a value for the following pointer:
 
@@ -128,7 +142,7 @@ Returns whether a json pointer has a parent in the store. It functions similarly
 ## A note on observables
 Setting, slicing and subscribing using json pointers are intuitive an easy. Because get() returns an observable you can combine, transform, slice and dice to great complexity and it remains reactive. 
 
-    cons obs$ = forkJoin([
+    const obs$ = forkJoin([
         store.get('/users/10').pipe(  
           map(user => user.posts)
         ),
